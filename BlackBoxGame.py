@@ -232,9 +232,11 @@ class Board:
         """
         current_ray = Ray(row, column)
         self._border_squares_used.add(current_ray.get_entry_position())  # add start position to set of squares used
+        need_to_check_next_position = True
 
-        while current_ray.get_status() == "IN PROGRESS":
+        while need_to_check_next_position is True:
             next_position = current_ray.get_next_position()
+            print(current_ray.get_current_position())
 
             # check for immediate hit
             for atom in self._atoms:
@@ -253,17 +255,21 @@ class Board:
             if self.check_if_border_square(next_position) is True:
                 return current_ray.end_ray()
 
-            if self.check_for_hit(next_position) is True:
+            # check for atom at next position
+            elif self.check_for_hit(next_position) is True:
                 current_ray.set_status("HIT")
                 return None
 
-            deflection = self.check_for_deflection(current_ray, next_position)
-            if deflection is not False:
-                current_ray.deflect(deflection)
+            # check for a deflection at next position
+            elif self.check_for_deflection(current_ray, next_position) is not False:
+                current_ray.deflect(self.check_for_deflection(current_ray, next_position))
 
-            # move to next position
-            next_position = current_ray.get_next_position()
-            current_ray.set_current_position(next_position)
+            # move to next position or start next iteration with the adjusted next position
+            if next_position == current_ray.get_next_position():
+                current_ray.set_current_position(next_position)
+
+
+
 
 
 class Atom:
@@ -483,4 +489,9 @@ class Ray:
         return self._exit_position
 
 
+if __name__ == "__main__":
 
+    atom_list= [(2,4), (4,4), (4, 6)]
+    game1= BlackBoxGame(atom_list)
+    game1.display_board()
+    print("Exit Square: ", game1.shoot_ray(9,6))
