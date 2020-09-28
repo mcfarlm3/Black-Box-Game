@@ -94,7 +94,7 @@ class BlackBoxGame:
 
             return False
 
-    def atoms_left(self):
+    def get_atoms_left(self):
         """Returns the number of atoms left to be guessed."""
         count = 0
         for atom in self._board.get_atoms():
